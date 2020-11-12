@@ -1,20 +1,20 @@
-** DuckDB is a work-in-progress embedded [in-memory]/parallel/vector/columnar analytics engine. **   
+**DuckDB is a work-in-progress embedded [in-memory]/parallel/vector/columnar analytics engine. **   
 
 Background reading here:  https://duckdb.org/docs/why_duckdb
 
-** Python Hello World - create 1/2 Billion rows in about 12 seconds, about 1/2 second query **
+**Python Hello World - create 1/2 Billion rows in about 12 seconds, about 1/2 second query **
 ```
 import duckdb
 conn = duckdb.connect()
 conn.execute("create table t as select mod(range, 100000) c1, 42 c2 from range(500000000);")
 print(conn.execute("select c1, count(*) from t where c1 < 5 group by 1").fetchall())
 ```
-** Add parallel execution with this syntax: ** 
+**Add parallel execution with this syntax: ** 
 ```
 conn.execute("pragma threads=8")
 ```
 
-Create an in-memory database via CLI:
+**Create an in-memory database via CLI:**
 ```
 $./build/release/duckdb
 DuckDB c0f167461
