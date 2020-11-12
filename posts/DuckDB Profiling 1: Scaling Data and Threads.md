@@ -11,3 +11,4 @@ Use pragma threads = 8; syntax to change then number of threads working on a giv
 * TPC-H Scale Factor in [ 10,30,100,300 ]
 
 
+![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF10_TPCH.png?raw=true) 
