@@ -17,11 +17,11 @@ Use pragma threads = 8; syntax to change then number of threads working on a giv
 
 Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or 16 threads. 
 
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF10_TPCH.png?raw=true) 
+![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF10_Scaling.png?raw=true) 
 
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF30_TPCH.png?raw=true) 
+![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF30_Scaling.png?raw=true) 
 
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF100_TPCH.png?raw=true) 
+![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF100_Scaling.png?raw=true) 
 
 ## Analysis:
 1) Consistent query execution across scale factors.  A query that runs at 10GB of data will also run at 100GB.
