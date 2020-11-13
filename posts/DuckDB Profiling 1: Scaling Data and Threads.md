@@ -51,8 +51,8 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
-
-’’’
+Q5 and Q17 queries below:
+```
 SELECT /* Q5 */ n1.n_name, 
        Sum(l_extendedprice * ( 1 - l_discount )) AS revenue 
   FROM customer, 
@@ -77,9 +77,9 @@ SELECT /* Q5 */ n1.n_name,
        AND o_orderdate < '1995-01-01' 
 GROUP  BY n1.n_name 
 ORDER  BY revenue DESC; 
-’’’
-’’’
-SELECT sum(l_extendedprice)/7.0 as avg_yearly 
+```
+```
+SELECT /* Q17*/ sum(l_extendedprice)/7.0 as avg_yearly 
   FROM lineitem, 
        part 
  WHERE p_partkey = l_partkey 
@@ -88,7 +88,7 @@ SELECT sum(l_extendedprice)/7.0 as avg_yearly
        AND l_quantity < (SELECT 0.2*avg(l_quantity) 
                            FROM lineitem 
                           WHERE l_partkey = p_partkey); 
-’’’
+```
 
 
 
