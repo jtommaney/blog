@@ -51,6 +51,7 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
+
 Q5 and Q17 queries below:
 ```
 SELECT /* Q5 */ n1.n_name, 
