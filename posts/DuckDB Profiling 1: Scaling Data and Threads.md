@@ -44,9 +44,10 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
  - Most queries (15 of 22) run +/- 10% of expected costs.
  - A few including Q17, Q18, and Q22 take 14.x longer to run on 10x more data.  
 
-2) Potential causes for future investigation:
+2) Potential causes for future investigation. 
     - a sub-optimal query plan? 
-    - change in query plan at different scale factor?  
+    - change in query plan at different scale factor? 
+    - Some characteristic of sub-query common to all 3 queries is sub-optimal.
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
