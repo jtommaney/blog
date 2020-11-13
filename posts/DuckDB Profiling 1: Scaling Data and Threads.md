@@ -77,7 +77,8 @@ SELECT /* Q5 */ n1.n_name,
        AND o_orderdate < '1995-01-01' 
 GROUP  BY n1.n_name 
 ORDER  BY revenue DESC; 
-
+’’’
+’’’
 SELECT sum(l_extendedprice)/7.0 as avg_yearly 
   FROM lineitem, 
        part 
@@ -88,7 +89,6 @@ SELECT sum(l_extendedprice)/7.0 as avg_yearly
                            FROM lineitem 
                           WHERE l_partkey = p_partkey); 
 ’’’
-
 
 
 
