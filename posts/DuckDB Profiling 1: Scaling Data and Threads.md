@@ -1,6 +1,11 @@
+## DuckDB Profiling 1:TLDR:
+* Excellent usability, performance, and scaling across many query, data, and parallelism conditions.
+* Opportunities to improve linear scaling, and to better handle data growth for specific queries. 
+* DuckDB continues to improve quickly, these notes are with DuckDB 0.2.2
+
 ## DuckDB Profiling 1: Scaling Data and Threads
 
-General test scenario:  create TPC-H schemas at scale factor (SF) 10, 30, 100, and 300.  
+General test scenario:  create TPC-H schemas at scale factor (SF) 10, 30, and 100.  
 SF-100 is 150 million orders, with 600 million line items and about 100GB raw data.  
 
 Use pragma threads = 8; syntax to change then number of threads working on a given query.  
@@ -24,7 +29,7 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF100_Scaling.png?raw=true) 
 
-## Thread-Scaling Analysis:
+## Thread-Scaling Analysis - What happens as parallelism changes:
 1) Generally consistent behaviors across scale factors.  A query that runs at 10GB of data will also run at 100GB.
 2) Examples of "Pretty Good" Linear Scaling include Q1, Q3,Q4 and Q7. Query 1 is 3.77x faster at SF100 with 4 threads, and 7.3x faster with 8 threads. 
 3) The next set of 9 queries averages 2.48x faster with 4 threads, and 3.23x faster with 8 threads (diminishing returns).
@@ -33,9 +38,20 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 ![](https://github.com/jtommaney/blog/blob/blog/assets/speedup_at_sf100.png?raw=true)
 
 
+
+## Data-Scaling Analysis - What happens as data size changes:  
+1) There is significant variability in query behavior as data size grows.  These are with 8 threads in parallel.   
+ - Positive example:  Q1 (no joins) runs in 6.59 seconds at SF10 and 12.49 seconds at SF100 
+ - Negative example:  Q5 (8 table join) runs in 0.18 seconds at SF10 and 17.53 seconds at SF100
+ - Negative example:  Q17 (3 table join including subquery) runs in 0.39 seconds at SF10 and 51.92 seconds at SF100 
+
+2) Potential causes for future investigation:
+    - a sub-optimal plan with an N-squared compontent  
+    - change in query plan
+
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
-## Data-Scaling Analysis:
+
 ’’’
 SELECT /* Q5 */ n1.n_name, 
        Sum(l_extendedprice * ( 1 - l_discount )) AS revenue 
