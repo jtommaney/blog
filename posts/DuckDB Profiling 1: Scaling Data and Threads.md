@@ -31,6 +31,9 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 3) The next set of 9 queries averages 2.48x faster with 4 threads, and 3.23x faster with 8 threads (diminishing returns).
 4) The remaining 9 queries have limited scaling with additional threads.  They average 1.39x faster with 4 threads and 1.42x faster with 8 threads.
 
+![](https://github.com/jtommaney/blog/blob/blog/assets/speedup_at_sf100.png?raw=true)
+
+
 
 
 	
