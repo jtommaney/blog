@@ -40,55 +40,48 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
 
 
 ## Data-Scaling Analysis - What happens as data size changes:  
-1) There is significant variability in query behavior as data size grows.  These are with 8 threads in parallel.   
- - Positive example:  Q1 (no joins) runs in 6.59 seconds at SF10 and 12.49 seconds at SF100 
- - Negative example:  Q5 (8 table join) runs in 0.18 seconds at SF10 and 17.53 seconds at SF100
- - Negative example:  Q17 (3 table join including subquery) runs in 0.39 seconds at SF10 and 51.92 seconds at SF100 
+1) There is some variability in query behavior as data size grows.  These are with 8 threads in parallel.   
+ - Most queries (15 of 22) run +/- 10% of expected costs.
+ - A few including Q17, Q18, and Q22 take 14.x longer to run on 10x more data.  
 
 2) Potential causes for future investigation:
-    - a sub-optimal plan with an N-squared compontent  
-    - change in query plan
+    - a sub-optimal query plan? 
+    - change in query plan at different scale factor?  
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
 
-Q5 and Q17 queries below:
+Q17, Q18, Q22 queries below:
 ```
-SELECT /* Q5 */ n1.n_name, 
-       Sum(l_extendedprice * ( 1 - l_discount )) AS revenue 
-  FROM customer, 
-       orders, 
-       lineitem, 
-       supplier, 
-       nation n1, 
-       region r1, 
-       nation n2, 
-       region r2 
- WHERE c_custkey = o_custkey 
-       AND l_orderkey = o_orderkey 
-       AND l_suppkey = s_suppkey 
-       AND c_nationkey = s_nationkey 
-       AND s_nationkey = n1.n_nationkey 
-       AND n1.n_regionkey = r1.r_regionkey 
-       AND r1.r_name = 'ASIA' 
-       AND c_nationkey = n2.n_nationkey 
-       AND n2.n_regionkey = r2.r_regionkey 
-       AND r2.r_name = 'ASIA' 
-       AND o_orderdate >= '1994-01-01' 
-       AND o_orderdate < '1995-01-01' 
-GROUP  BY n1.n_name 
-ORDER  BY revenue DESC; 
-```
-```
-SELECT /* Q17*/ sum(l_extendedprice)/7.0 as avg_yearly 
-  FROM lineitem, 
-       part 
- WHERE p_partkey = l_partkey 
-       AND p_brand = 'Brand#23' 
-       AND p_container = 'MED BOX' 
-       AND l_quantity < (SELECT 0.2*avg(l_quantity) 
-                           FROM lineitem 
-                          WHERE l_partkey = p_partkey); 
+S
+select /*Q17*/ sum(l_extendedprice)/7.0 as avg_yearly 
+from lineitem, part 
+where p_partkey = l_partkey and p_brand = 'Brand#23' and p_container = 'MED BOX' 
+and l_quantity < (select 0.2*avg(l_quantity) 
+                    from lineitem 
+              where l_partkey = p_partkey); 
+
+
+select /* Q18 */ c_name, c_custkey, o_orderkey, o_orderdate, o_totalprice, sum(l_quantity) 
+from customer, orders, lineitem 
+where o_orderkey in (select l_orderkey from lineitem 
+		      where l_orderkey group by 1 having sum(l_quantity) > 300 ) 
+                        and c_custkey = o_custkey and o_orderkey = l_orderkey 
+group by c_name, c_custkey, o_orderkey, o_orderdate, o_totalprice 
+order by o_totalprice desc, o_orderdate limit 100; 
+
+
+select /* Q22 */ cntrycode, count(*) as numcust, sum(c_acctbal) as totacctbal 
+from (select substring(c_phone,1,2) as cntrycode, c_acctbal 
+        from customer 
+       where substring(c_phone,1,2) in ('13', '31', '23', '29', '30', '18', '17') 
+         and c_acctbal > (select avg(c_acctbal) 
+                            from customer 
+                           where c_acctbal > 0.00 
+                             and substring(c_phone,1,2) in ('13', '31', '23', '29', '30', '18', '17')) 
+    and not exists ( select * from orders 
+                             where o_custkey = c_custkey)) as custsale 
+group by cntrycode order by cntrycode; 
 ```
 
 
