@@ -12,7 +12,7 @@ Use pragma threads = 8; syntax to change then number of threads working on a giv
 
 * Threads in [ 1,2,4,8,16 ]
 * TPC-H Queries range [ 1...22]
-* TPC-H Scale Factor in [ 10,30,100,300 ]
+* TPC-H Scale Factor in [ 10,30,100 ]
 
 ## Notes on this test scenario
 1) This is all "index free", just using the power of columnar vector scans in parallel.  Very simple to use, create table -> run query.
