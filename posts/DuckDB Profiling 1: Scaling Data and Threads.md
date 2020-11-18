@@ -4,6 +4,18 @@
 * Opportunities to improve linear scaling, and to better handle data growth for specific queries. 
 * DuckDB continues to improve quickly, these notes are with DuckDB 0.2.3
 
+## DuckDB Profiling 1: Comparison with SQLite3
+
+General test scenario:  create DBT-3 schemas at scale factor (SF) 10, 30, and 100.  
+SF-100 is 150 million orders, with 600 million line items and about 100GB raw data.  
+
+Use "pragma threads = n" syntax to change then number of threads working on a given query.  
+
+* Threads in [ 1,2,4,8,16 ]
+* DBT-3 Queries range [ 1...22]
+* DBT-3 Scale Factor in [ 10,30,100 ]
+
+
 ## DuckDB Profiling 1: Scaling Data and Threads
 
 General test scenario:  create DBT-3 schemas at scale factor (SF) 10, 30, and 100.  
