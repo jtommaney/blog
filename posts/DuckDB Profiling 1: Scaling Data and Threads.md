@@ -1,22 +1,23 @@
 ## DuckDB Profiling 1:TLDR:
 * Excellent usability, performance, and scaling across many query, data, and parallelism conditions.
+* 100x faster than SQLite3, DBT3 benchmark at scale factor 10:  SQLite3-2573.88 Seconds, DuckDB with 16 threads-26.94 seconds
 * Opportunities to improve linear scaling, and to better handle data growth for specific queries. 
-* DuckDB continues to improve quickly, these notes are with DuckDB 0.2.2
+* DuckDB continues to improve quickly, these notes are with DuckDB 0.2.3
 
 ## DuckDB Profiling 1: Scaling Data and Threads
 
-General test scenario:  create TPC-H schemas at scale factor (SF) 10, 30, and 100.  
+General test scenario:  create DBT-3 schemas at scale factor (SF) 10, 30, and 100.  
 SF-100 is 150 million orders, with 600 million line items and about 100GB raw data.  
 
-Use pragma threads = 8; syntax to change then number of threads working on a given query.  
+Use "pragma threads = n" syntax to change then number of threads working on a given query.  
 
 * Threads in [ 1,2,4,8,16 ]
-* TPC-H Queries range [ 1...22]
-* TPC-H Scale Factor in [ 10,30,100 ]
+* DBT-3 Queries range [ 1...22]
+* DBT-3 Scale Factor in [ 10,30,100 ]
 
 ## Notes on this test scenario
 1) This is all "index free", just using the power of columnar vector scans in parallel.  Very simple to use, create table -> run query.
-2) Load is extremely fast.  At 100GB load is about 25 minutes. 
+2) Load is extremely fast.  At 100GB load is about 25 minutes. at 10GB load is 
 3) Data was loaded by day to enable data skipping. For example a filter on l_shipdate for a given month can ignore remaining 83 months.
 4) Overall at least 12x faster than a tuned MySQL instance at SF10. Q1 for example is 176.5 seconds with MySQL, and 1.26 with DuckDB.  
 
