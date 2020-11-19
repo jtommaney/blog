@@ -23,10 +23,10 @@ Use "pragma threads = n" syntax to change then number of threads working on a gi
 2) Load is extremely fast.  At 100GB load is about 25 minutes. at 10GB load is about 3 minutes.  
 3) Data was loaded by day to enable data skipping. For example a filter on l_shipdate for a given month can ignore remaining 83 months.
 4) Overall at least 12x faster than a tuned MySQL instance at SF10. Q1 for example is 176.5 seconds with MySQL, and 1.26 with DuckDB. 
-5) Change integers/decimals on some columns to double to address temporary performance limitations with conservative handling of large intermediate values. 
+5) Change integers/decimals on some columns to double to address temporary performance limitations with conservative handling of large aggregations.  
 
 
-Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or 16 threads. 
+Below are DBT-3 queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or 16 threads. 
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SF10_Scaling.png?raw=true) 
 
