@@ -1,67 +1,16 @@
 ## DuckDB Profiling Summary
 * We are hiring if you are interested in working on DuckDB with Alibaba!  C++ w/ DBMS tech, Seattle/Sunnyvale areas (after work-from-home restrictions).
-* DuckDB has excellent usability and performance across many query, data, and parallelism conditions.
-* Up to 80x faster than SQLite3. DBT3 benchmark at 10 GB:  SQLite3 - 2573.88 Seconds, DuckDB with 8 threads - 32.15 seconds
-* DuckDB continues to improve quickly, these notes are with DuckDB 0.2.3
-
+* DuckDB has excellent usability and performance across many query, data, and parallelism conditions
+* Handles scaling up to 100GB easily, with near linear cost scaling across all DBT3 queries.
 * Opportunities to improve linear scaling, and to better handle data growth for specific queries. 
 
 
-## DuckDB Profiling 1: Comparison with SQLite3
 
-General test scenario:  create DBT-3 schemas at scale factor (SF) 10.  
-SF-10 is 15 million orders, with 60 million line items and about 10GB raw data.  
-
-Create SQLite schema with indexes on these columns:
-n_nationkey, n_regionkey 
-r_regionkey 
-c_custkey, c_nationkey
-p_partkey
-s_suppkey,s_nationkey
-ps_partkey, ps_suppkey
-o_orderkey, o_custkey, o_orderdate
-l_orderkey,l_partkey,
-l_suppkey,l_shipdate,l_commitdate,l_receiptdate
-[ l_partkey,  l_suppkey] and [ l_suppkey,  l_partkey]
-[ps_partkey, ps_suppkey] and [ps_suppkey, ps_partkey]
-
-```
-|  Loading  10GB  |  SQLite3 2417 Seconds |  
-                  |  DuckDB   165 Seconds |
-
-|  Memory Footprint  |  SQLite3 28.0g Resident Memory  |
-                     |  DuckDB  11.3g Resident Memory  |
-
-|  Total Query Seconds  |  SQLite3          2573.8 Seconds  |
-                        |  DuckDB 1 thread   103.4 Seconds  |
-                        |  DuckDB 8 threads   32.2 Seconds  |
-100GB (instead of 10GB) |  DuckDB 8 threads  421.7 Seconds  |
-```
-Per-Query speedup ( x times faster ):
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_Speedup.png?raw=true) 
-
-
-Individual timings
-
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SQLite.png?raw=true) 
-
-
-Use "pragma threads = n" syntax to change then number of threads working on a given query.  
-
-* Threads in [ 1,2,4,8,16 ]
-* DBT-3 Queries range [ 1...22]
-
-
-Queries	2573.882298	103.363	32.146	421.697
-
-![](https://github.com/jtommaney/blog/blob/blog/assets/DuckDB_SQLite.png?raw=true) 
-
-
-
-## DuckDB Profiling 1: Scaling Data and Threads
+## DuckDB Profiling 2: Scaling Data and Threads
 
 General test scenario:  create DBT-3 schemas at scale factor (SF) 10, 30, and 100.  
-SF-100 is 150 million orders, with 600 million line items and about 100GB raw data.  
+SF-100 is 150 million orders, with 600 million line items and about 100GB raw data. 
+
 
 Use "pragma threads = n" syntax to change then number of threads working on a given query.  
 
@@ -71,9 +20,10 @@ Use "pragma threads = n" syntax to change then number of threads working on a gi
 
 ## Notes on this test scenario
 1) This is all "index free", just using the power of columnar vector scans in parallel.  Very simple to use, create table -> run query.
-2) Load is extremely fast.  At 100GB load is about 25 minutes. at 10GB load is 
+2) Load is extremely fast.  At 100GB load is about 25 minutes. at 10GB load is about 3 minutes.  
 3) Data was loaded by day to enable data skipping. For example a filter on l_shipdate for a given month can ignore remaining 83 months.
-4) Overall at least 12x faster than a tuned MySQL instance at SF10. Q1 for example is 176.5 seconds with MySQL, and 1.26 with DuckDB.  
+4) Overall at least 12x faster than a tuned MySQL instance at SF10. Q1 for example is 176.5 seconds with MySQL, and 1.26 with DuckDB. 
+5) Change integers/decimals on some columns to double to address temporary performance limitations with conservative handling of large intermediate values. 
 
 
 Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or 16 threads. 
@@ -103,6 +53,7 @@ Below are TPC-H queries 1-22 running at SF 10, 30, and 100, using 1, 2, 4, 8, or
     - a sub-optimal query plan? 
     - change in query plan at different scale factor? 
     - Some characteristic of sub-query common to all 3 queries is sub-optimal.
+    - Q22 currently has an extra join not (yet) optimized away.  Issue understood by DuckDB team. 
 
 ![](https://github.com/jtommaney/blog/blob/blog/assets/Scaling_from_10_to_100.png?raw=true)	
 
