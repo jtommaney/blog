@@ -1,13 +1,10 @@
 ## DuckDB Profiling Summary
-* We are hiring if you are interested in working on DuckDB with Alibaba!  C++ w/ DBMS tech, Seattle/Sunnyvale areas (after work-from-home restrictions).
+* We are hiring if you are interested in working on DuckDB with Alibaba!  
+  Looking for C++ w/ DBMS tech, Seattle/Sunnyvale areas (after work-from-home restrictions).
 * DuckDB has excellent usability and performance across many query, data, and parallelism conditions.
 * Up to 80x faster than SQLite3. DBT3 benchmark at 10 GB:  SQLite3 - 2573.88 Seconds, DuckDB with 8 threads - 32.15 seconds
-* DuckDB continues to improve quickly, these notes are with DuckDB 0.2.3
 
-* Opportunities to improve linear scaling, and to better handle data growth for specific queries. 
-
-
-## DuckDB Profiling 1: Genaral Setup
+## DuckDB Profiling 1: General Setup
 General test scenario:  create DBT-3 schemas at scale factor (SF) 10.  
 SF-10 is 15 million orders, with 60 million line items and about 10GB raw data.  
 
